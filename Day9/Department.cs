@@ -12,14 +12,18 @@ namespace Day9
         List<Employee> Staff;
         public void AddStaff(Employee E)
         {
-            throw new NotImplementedException();
+            Staff.Add(E);
+            E.EmployeeLayOff += RemoveStaff;
             ///Try Register for EmployeeLayOff Event Here
         }
         ///CallBackMethod
         public void RemoveStaff(object sender,
        EmployeeLayOffEventArgs e)
         {
-            throw new NotImplementedException();
+            if(sender is Employee Emp){
+                Staff.Remove(Emp);
+            }
+            
         }
     }
 }
