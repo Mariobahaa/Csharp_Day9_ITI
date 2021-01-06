@@ -12,8 +12,13 @@ namespace Day9
         List<Employee> Staff;
         public void AddStaff(Employee E)
         {
-            Staff.Add(E);
-            E.EmployeeLayOff += RemoveStaff;
+            if (Staff == null) Staff = new List<Employee>();
+
+            if (E != null)
+            {
+                Staff?.Add(E);
+                E.EmployeeLayOff += RemoveStaff;
+            }
             ///Try Register for EmployeeLayOff Event Here
         }
         ///CallBackMethod
@@ -21,7 +26,7 @@ namespace Day9
        EmployeeLayOffEventArgs e)
         {
             if(sender is Employee Emp){
-                Staff.Remove(Emp);
+                Staff?.Remove(Emp);
             }
             
         }

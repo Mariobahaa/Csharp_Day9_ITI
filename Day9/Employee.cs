@@ -11,8 +11,9 @@ namespace Day9
         protected virtual void OnEmployeeLayOff
        (EmployeeLayOffEventArgs e)
         {
-           
-                EmployeeLayOff.Invoke(this, e);
+            Console.Write($"Layed off Employee with ID: {this?.EmployeeID} ");
+            Console.WriteLine($"Because {e.Cause}");
+                EmployeeLayOff?.Invoke(this, e);
         }
         public int EmployeeID { get; set; }
         public DateTime BirthDate
@@ -27,7 +28,8 @@ namespace Day9
         }
         public bool RequestVacation(DateTime From, DateTime To)
         {
-            int reqDays = (To - From).Days;
+            if (From.CompareTo(To) > 0) return false;
+            int reqDays = To.Subtract(From).Days;
             VacationStock -= reqDays;
 
             if(VacationStock<0)
@@ -58,7 +60,7 @@ namespace Day9
 
         protected override void OnEmployeeLayOff(EmployeeLayOffEventArgs e)
         {
-            if(e.Cause == LayOffCause.target || e.Cause == LayOffCause.retired)
+            if(e?.Cause == LayOffCause.target || e?.Cause == LayOffCause.retired)
                 base.OnEmployeeLayOff(e);
         }
     }
@@ -72,7 +74,7 @@ namespace Day9
 
         protected override void OnEmployeeLayOff(EmployeeLayOffEventArgs e)
         {
-            if (e.Cause == LayOffCause.board)
+            if (e?.Cause == LayOffCause.board)
                 base.OnEmployeeLayOff(e);
         }
     }
