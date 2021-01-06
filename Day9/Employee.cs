@@ -11,8 +11,7 @@ namespace Day9
         protected virtual void OnEmployeeLayOff
        (EmployeeLayOffEventArgs e)
         {
-            DateTime retirement = BirthDate.AddYears(60);
-            if (DateTime.Now.CompareTo(retirement) > 0 || VacationStock < 0)
+           
                 EmployeeLayOff.Invoke(this, e);
         }
         public int EmployeeID { get; set; }
@@ -30,13 +29,18 @@ namespace Day9
         {
             int reqDays = (To - From).Days;
             VacationStock -= reqDays;
-            OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.fired });
+
+            if(VacationStock<0)
+                OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.vacation });
 
             return VacationStock >=0;   
         }
         public void EndOfYearOperation()
-        {       
-              OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.retired });  
+        {
+            DateTime retirement = BirthDate.AddYears(60);
+
+            if (DateTime.Now.CompareTo(retirement) > 0)
+                OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.retired });  
         }
         
     }
@@ -46,22 +50,42 @@ namespace Day9
         public int AchievedTarget { get; set; }
         public bool CheckTarget(int Quota)
         {
-            throw new NotImplementedException();
+            if(AchievedTarget< Quota)
+                OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.target });
+
+            return AchievedTarget >= Quota;
+        }
+
+        protected override void OnEmployeeLayOff(EmployeeLayOffEventArgs e)
+        {
+            if(e.Cause == LayOffCause.target || e.Cause == LayOffCause.retired)
+                base.OnEmployeeLayOff(e);
         }
     }
     class BoardMember : Employee
     {
         public void Resign()
         {
-            throw new NotImplementedException();
+            OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.board });
+
+        }
+
+        protected override void OnEmployeeLayOff(EmployeeLayOffEventArgs e)
+        {
+            if (e.Cause == LayOffCause.board)
+                base.OnEmployeeLayOff(e);
         }
     }
 
-
+    
     public enum LayOffCause
     { ///Implement it YourSelf 
-        retired,
-        fired //vacation stock exceeded
+        retired, //retired employee
+        vacation, //vacation stock exceeded
+        target, //failed to complete target
+        board //board member
+
+        //YES!! I know that retired and board can be the same thing. ;)
     }
     public class EmployeeLayOffEventArgs
     {

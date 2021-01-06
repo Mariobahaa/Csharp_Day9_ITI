@@ -20,7 +20,7 @@ namespace Day9
        (object sender, EmployeeLayOffEventArgs e)
         {
             
-            if(e.Cause == LayOffCause.fired)
+            if(e.Cause != LayOffCause.retired && e.Cause!=LayOffCause.board)
             {
                 if (sender is Employee Emp)
                     Members.Remove(Emp);
