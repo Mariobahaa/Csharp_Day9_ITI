@@ -7,38 +7,47 @@ namespace Day9
     class Employee
     {
         public event
-       EventHandler<EmployeeLayOffEventArgs> EmployeeLayOff;
+        EventHandler<EmployeeLayOffEventArgs> EmployeeLayOff;
         protected virtual void OnEmployeeLayOff
        (EmployeeLayOffEventArgs e)
         {
-            throw new NotImplementedException();
+            //if(VacationStock < 0 || (DateTime.Now - BirthDate).Days > ((365*60)+15))
+            EmployeeLayOff.Invoke(this, e);
         }
         public int EmployeeID { get; set; }
         public DateTime BirthDate
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get;
+            set;
         }
         public int VacationStock
         {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
+            get;
+            set;
         }
         public bool RequestVacation(DateTime From, DateTime To)
         {
-            throw new NotImplementedException();
+            int reqDays = (To - From).Days;
+            if(reqDays <= VacationStock)
+            {
+                VacationStock -= reqDays;
+                return true;
+            }
+            else
+            {
+                OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.fired });
+                return false;
+            }
         }
         public void EndOfYearOperation()
         {
-            throw new NotImplementedException();
+            DateTime retirement = BirthDate.AddYears(60);
+            if(DateTime.Now.CompareTo(retirement) > 0)
+            {
+                OnEmployeeLayOff(new EmployeeLayOffEventArgs() { Cause = LayOffCause.retired });
+            }
         }
-    }
-    public enum LayOffCause
-    { ///Implement it YourSelf 
-    }
-    public class EmployeeLayOffEventArgs
-    {
-        public LayOffCause Cause { get; set; }
+        
     }
 
     class SalesPerson : Employee
@@ -55,6 +64,17 @@ namespace Day9
         {
             throw new NotImplementedException();
         }
+    }
+
+
+    public enum LayOffCause
+    { ///Implement it YourSelf 
+        retired,
+        fired //vacation stock exceeded
+    }
+    public class EmployeeLayOffEventArgs
+    {
+        public LayOffCause Cause { get; set; }
     }
 }
 
